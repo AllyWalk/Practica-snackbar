@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Practica 2.1</string>
+    <string name="image_description">Image</string>
+    <string name="materia">Aplication Devolopment</string>
+    <string name="nombre">FANNYS</string>
+    <string name="apellido">SALAS A</string>
+    <string name="back_btn">Back</string>
+    <string name="title">Hi</string>
+    <string name="bottom_btn">Hi</string>
+    <string name="home_fab_text">Add</string>
+
+</resources>
