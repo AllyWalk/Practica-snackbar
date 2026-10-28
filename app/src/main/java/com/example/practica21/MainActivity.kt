@@ -2,6 +2,7 @@ package com.example.practica21
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -51,17 +53,35 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.practica21.ui.theme.Practica21Theme
 
 class MainActivity : ComponentActivity() {
+
+    private val TAB = "MainActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
+        ShowToast("Funcion onCreate()")
         enableEdgeToEdge()
         setContent {
             Practica21Theme {
                 ViewContainer()
             }
         }
+    }
+    override fun onStart(){
+        super.onStart()
+        ShowToast("Funcion OnStart()")
+    }
+    fun ShowToast(message:String){
+        val toast = Toast.makeText(
+            this,
+            message,
+            Toast.LENGTH_LONG
+        )
+        toast.show()
+        Log.i(TAB,message)
     }
 }
 
@@ -77,75 +97,96 @@ class MainActivity : ComponentActivity() {
 fun ViewContainer(){
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    var showScaffoldBars by rememberSaveable { mutableStateOf(true) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.title)) },
-                colors = TopAppBarColors(
-                    titleContentColor = Color.White,
-                    subtitleContentColor = Color.White,
-                    actionIconContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    scrolledContainerColor = Color.White,
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back_btn),
-                            tint = Color.White
-                        )
+        topBar = if (showScaffoldBars) {
+            {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.title)) },
+                    colors = TopAppBarColors(
+                        titleContentColor = Color.White,
+                        subtitleContentColor = Color.White,
+                        actionIconContentColor = Color.White,
+                        navigationIconContentColor = Color.White,
+                        scrolledContainerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {}
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back_btn),
+                                tint = Color.White
+                            )
+                        }
                     }
-                }
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.primary
-            ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = stringResource(R.string.bottom_btn),
-                    color = Color.White,
-                    fontSize = 18.sp
                 )
             }
+        } else {
+            {}
         },
-        floatingActionButton = {
-            val context = LocalContext.current
-            FloatingActionButton(onClick = {
-                Toast.makeText(
-                    context,
-                    R.string.home_fab_text,
-                    Toast.LENGTH_LONG
-                ).show()
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "I am a Snackbar! <3",
-                        actionLabel = "Do something"
+        bottomBar = if (showScaffoldBars) {
+            {
+                BottomAppBar(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = stringResource(R.string.bottom_btn),
+                        color = Color.White,
+                        fontSize = 18.sp
                     )
                 }
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.home_fab_text)
-                )
             }
+        } else {
+            {}
+        },
+        floatingActionButton = if (showScaffoldBars) {
+            {
+                val context = LocalContext.current
+                FloatingActionButton(onClick = {
+                    Toast.makeText(
+                        context,
+                        R.string.home_fab_text,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "I am a Snackbar! <3",
+                            actionLabel = "Do something"
+                        )
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.home_fab_text)
+                    )
+                }
+            }
+        } else {
+            {}
         }
         //modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        ContentView(modifier = Modifier.padding(innerPadding))
+        ContentView(
+            modifier = Modifier.padding(innerPadding),
+            showScaffoldBars = showScaffoldBars,
+            onToggleScaffoldBars = { showScaffoldBars = !showScaffoldBars }
+        )
     }
 }
 @Composable
-fun ContentView(modifier: Modifier = Modifier) {
+fun ContentView(
+    modifier: Modifier = Modifier,
+    showScaffoldBars: Boolean = true,
+    onToggleScaffoldBars: () -> Unit = {}
+) {
     //var counter by remember { mutableStateOf(0) }
     var counter by rememberSaveable { mutableStateOf(0) }
     LazyColumn(
@@ -155,6 +196,14 @@ fun ContentView(modifier: Modifier = Modifier) {
     )
     {
         item {
+            Button(
+                onClick = onToggleScaffoldBars,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(if (showScaffoldBars) "Ocultar Scaffold (Barras)" else "Mostrar Scaffold (Barras)")
+            }
             Image(
                 painter = painterResource(id = R.drawable.fannybrasilena),
                 contentDescription = "Ilustración de Android",

@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.Practica21" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="These.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple_500</item>
+       <item name="windowSplashScreenAnimatedIcon">@mipmap/usagi_drop_round</item>
+        <item name="postSplashScreenTheme">@style/Theme.Practica21</item>
+    </style>
 </resources>
