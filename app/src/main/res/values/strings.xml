@@ -6,6 +6,21 @@
     <string name="apellido">Qunitero Aguila</string>
     <string name="title">Hi</string>
     <string name="back_btn">Regreso</string>
+    <string name="back_btn_desc">Regresar</string>
     <string name="bottom_btn">Hi</string>
+    <string name="bottom_app_bar">Barra inferior</string>
     <string name="home_fab_text">Agregar</string>
+    <string name="options_menu">Opciones</string>
+    <string name="profile">Perfil</string>
+    <string name="calls">Llamadas</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="contacts">Contactos</string>
+    <string name="config">Configuración</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="snackbar">Hola soy un Snackbar</string>
+    <string name="texto_snackbar">Este es un mensaje de Snackbar</string>
+    <string name="bottom_bar">Barra inferior</string>
+    <string name="add_icon">Agregar</string>
+    <string name="title_activity_second">SecondActivity</string>
+    <string name="second_activity">Segunda Actividad</string>
 </resources>

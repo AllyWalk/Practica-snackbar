@@ -5,8 +5,23 @@
     <string name="nombre">FANNYS</string>
     <string name="apellido">SALAS A</string>
     <string name="back_btn">Back</string>
+    <string name="back_btn_desc">Go back</string>
     <string name="title">Hi</string>
     <string name="bottom_btn">Hi</string>
+    <string name="bottom_app_bar">Bottom bar</string>
     <string name="home_fab_text">Add</string>
+    <string name="options_menu">Options</string>
+    <string name="profile">Profile</string>
+    <string name="calls">Calls</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="contacts">Contacts</string>
+    <string name="config">Settings</string>
+    <string name="logout">Log out</string>
+    <string name="snackbar">Hello I am a Snackbar</string>
+    <string name="texto_snackbar">This is a Snackbar message</string>
+    <string name="bottom_bar">Bottom bar</string>
+    <string name="add_icon">Add</string>
+    <string name="title_activity_second">SecondActivity</string>
+    <string name="second_activity">Second Activity</string>
 
 </resources>
