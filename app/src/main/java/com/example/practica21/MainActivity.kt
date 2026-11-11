@@ -15,7 +15,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,7 +31,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -39,6 +47,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +57,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -63,12 +76,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -140,102 +157,205 @@ fun ViewContainer(){
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val snackbarMessage = stringResource(R.string.texto_snackbar)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
-
-        topBar = {
-            TopAppBar(
-                title = {Text(stringResource(R.string.title))},
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.secondary,
-                    navigationIconContentColor = Color.White,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White,
-                    subtitleContentColor = Color.White
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back_btn_desc),
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { openWebScreen(context) }) {
-                        Icon(
-                            imageVector = Icons.Default.AddLink,
-                            contentDescription = "Marcar como favorito",
-                            tint = Color.White
-                        )
-
-                    }
-
-                    IconButton(onClick = { /* Acción de compartir */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "Compartir",
-                            tint = Color.White
-                        )
-                    }
-                    DropDownMenu()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                // Sección 1: Foto circular, nombre y correo
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.gokupelon),
+                        contentDescription = "Profile Photo",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.nombre),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "noeasael@tecnm.mx",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
                 }
 
-            )
-        },
+                HorizontalDivider()
 
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.primary
-            ) {
+                // Sección 2: My files, Shared with me, Recent, Trash
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = stringResource(R.string.bottom_app_bar),
-                    color = Color.White,
-                    fontSize = 18.sp,
+                    text = "Archivos",
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Folder, contentDescription = null) },
+                    label = { Text("My files") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Share, contentDescription = null) },
+                    label = { Text("Shared with me") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.History, contentDescription = null) },
+                    label = { Text("Recent") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Delete, contentDescription = null) },
+                    label = { Text("Trash") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                // Sección 3: Familia
+                Text(
+                    text = "Grupos",
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Group, contentDescription = null) },
+                    label = { Text("Familia") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    }
                 )
             }
-        },
+        }
+    ) {
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
 
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text("Mostrar")},
-                icon = { Icon(Icons.Default.Add, contentDescription = "") },
-                onClick={
-                    scope.launch {
-                        val result = snackbarHostState
-                            .showSnackbar(
-                                message = snackbarMessage,
-                                actionLabel = "Action",
-                                duration = SnackbarDuration.Indefinite
-                            )
-                        when (result) {
-                            SnackbarResult.ActionPerformed -> {
-
+            topBar = {
+                TopAppBar(
+                    title = {Text(stringResource(R.string.title))},
+                    colors = TopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        scrolledContainerColor = MaterialTheme.colorScheme.secondary,
+                        navigationIconContentColor = Color.White,
+                        titleContentColor = Color.White,
+                        actionIconContentColor = Color.White,
+                        subtitleContentColor = Color.White
+                    ),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                // Aplicamos corrutina para abrir el drawer de forma asíncrona
+                                scope.launch {
+                                    drawerState.open()
+                                }
                             }
-                            SnackbarResult.Dismissed -> {
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menú de hamburguesa",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { openWebScreen(context) }) {
+                            Icon(
+                                imageVector = Icons.Default.AddLink,
+                                contentDescription = "Marcar como favorito",
+                                tint = Color.White
+                            )
 
+                        }
+
+                        IconButton(onClick = { /* Acción de compartir */ }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Compartir",
+                                tint = Color.White
+                            )
+                        }
+                        DropDownMenu()
+                    }
+
+                )
+            },
+
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = stringResource(R.string.bottom_app_bar),
+                        color = Color.White,
+                        fontSize = 18.sp,
+                    )
+                }
+            },
+
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    text = { Text("Mostrar")},
+                    icon = { Icon(Icons.Default.Add, contentDescription = "") },
+                    onClick={
+                        scope.launch {
+                            val result = snackbarHostState
+                                .showSnackbar(
+                                    message = snackbarMessage,
+                                    actionLabel = "Action",
+                                    duration = SnackbarDuration.Indefinite
+                                )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+
+                                }
+                                SnackbarResult.Dismissed -> {
+
+                                }
                             }
                         }
                     }
-                }
-            )
+                )
+            }
+
+
+            //modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
+            ContentView(modifier = Modifier.padding(innerPadding))
         }
-
-
-        //modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
-        ContentView(modifier = Modifier.padding(innerPadding))
     }
 }
 @Composable
@@ -245,7 +365,7 @@ fun ContentView(modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Yellow)
+            .background(Color(0xFFFFECB3)) // Fondo cálido que combina con las ilustraciones y Goku
     )
     {
         item {
@@ -254,7 +374,11 @@ fun ContentView(modifier: Modifier = Modifier) {
                 contentDescription = "Ilustración de Android",
                 modifier = Modifier.fillMaxWidth().height(400.dp)
             )
-            Row(modifier = Modifier.padding(top=2.dp)){
+            Row(
+                modifier = Modifier
+                    .padding(12.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ){
                 Image(
                     painter = painterResource(id= R.drawable.baseline_stars_24),
                     contentDescription = "Star",
@@ -263,38 +387,38 @@ fun ContentView(modifier: Modifier = Modifier) {
                 Text(
                     text = counter.toString(),
                     fontSize = 20.sp,
-                    color= Color.DarkGray,
+                    color = Color(0xFF37474F),
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
             Text(
                 text = stringResource(R.string.image_description),
                 fontSize = 24.sp,
-                color = Color.Blue,
-                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFE65100), // Naranja profundo (combina con Goku)
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 textAlign = TextAlign.Center
 
             )
             Text(
                 text = stringResource(R.string.materia),
                 fontSize = 24.sp,
-                color = Color.Blue,
-                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFF0D47A1), // Azul marino profundo
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 textAlign = TextAlign.Center
 
             )
             Text(
                 text = stringResource(R.string.nombre),
                 fontSize = 25.sp,
-                color = Color.Magenta,
-                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFB71C1C), // Rojo vibrante
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 textAlign = TextAlign.Center
             )
             Text(
                 text = stringResource(R.string.apellido),
                 fontSize = 24.sp,
-                color = Color.Blue,
-                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFF1B5E20), // Verde oscuro
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 textAlign = TextAlign.Center
 
             )
